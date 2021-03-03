@@ -1,0 +1,55 @@
+---
+- name: Download checksums for installation program
+  get_url:
+    url: "{{ repo_url }}/clients/ocp/{{ ocp_release }}/sha256sum.txt"
+    dest: "{{ tools_temp_dir.path }}"
+
+- name: Capture checksums for client program
+  shell: "cat /{{ tools_temp_dir.path }}/sha256sum.txt | grep openshift-client-linux | awk '{ print $1 }'"
+  register: client_sha
+
+- name: Download client program
+  get_url:
+    url: "{{ repo_url }}/clients/ocp/{{ ocp_release }}/openshift-client-linux-{{ ocp_release }}.tar.gz"
+    dest: "{{ tools_temp_dir.path }}"
+    checksum: sha256:{{ client_sha.stdout }}
+
+- name: Capture checksums for installation program
+  shell: "cat {{ tools_temp_dir.path }}/sha256sum.txt | grep openshift-install-linux | awk '{ print $1 }'"
+  register: installation_sha
+
+- name: Download installation program
+  get_url:
+    url: "{{ repo_url }}/clients/ocp/{{ ocp_release }}/openshift-install-linux-{{ ocp_release }}.tar.gz"
+    dest: "{{ tools_temp_dir.path }}"
+    checksum: sha256:{{ installation_sha.stdout }}
+
+- name: Capture correct ova version
+  script: roles/download_ocp_tools/files/get_ova_version {{ ocp_release }}
+  register: ova_version
+
+- name: Download checksums for ova
+  get_url:
+    url: "{{ repo_url }}/dependencies/rhcos/{{ ocp_version.stdout }}/{{ ova_version.stdout }}/sha256sum.txt"
+    dest: "{{ tools_temp_dir.path }}/sha256sum.txt"
+    force: true
+
+- name: Capture checksums for OVA
+  shell: "cat {{ tools_temp_dir.path }}/sha256sum.txt | grep rhcos-{{ ova_version.stdout }}-{{ architecture }}-vmware.{{ architecture }}.ova | awk '{ print $1 }'"
+  register: ova_sha
+
+  #- name: Download ova
+  #  get_url:
+    #    url: "{{ repo_url }}/dependencies/rhcos/{{ ocp_version.stdout }}/{{ ova_version.stdout }}/rhcos-{{ ova_version.stdout }}-{{ architecture }}-vmware.{{ architecture }}.ova"
+    #    dest: "{{ tools_temp_dir.path }}"
+    #    checksum: sha256:{{ ova_sha.stdout }}
+
+## Untar tools
+- name: Untar
+  unarchive:
+    src: "{{ tools_temp_dir.path }}/{{ item }}"
+    dest: "{{ tools_temp_dir.path }}"
+    remote_src: yes
+  loop:
+    - "openshift-client-linux-{{ ocp_release }}.tar.gz"
+    - "openshift-install-linux-{{ ocp_release }}.tar.gz"
