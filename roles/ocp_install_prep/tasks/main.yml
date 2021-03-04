@@ -1,0 +1,15 @@
+---
+- name: Establish OCP version
+  script: "{{ role_path }}/files/get_ocp_version {{ ocp_release }}"
+  register: ocp_version
+
+- name: Create download dir
+  file:
+    path: "{{ ocp_resources_path }}"
+    state: directory
+
+- name: Run downloads
+  import_tasks: download.yml
+
+- name: Mirror images locally
+  import_tasks: mirror_images.yml

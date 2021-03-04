@@ -1,0 +1,18 @@
+---
+- name: Dry run images download
+  command: "{{ ocp_resources_path }}/oc adm release mirror -a {{ ocp_resources_path }}/pull-secret.json --to-dir={{ ocp_resources_path }}/mirror quay.io/{{ product_repo }}/{{ release_name }}:{{ ocp_release }}-x86_64 --dry-run"
+  ignore_errors: no
+  register: dry_run
+
+- name: Print dry_run output
+  debug:
+    var: dry_run.stderr_lines
+
+- name: Pause for confirmation
+  pause:
+    prompt: "Review (above) the images and configuration manifests to mirror"
+
+- name: Images download
+  command: "{{ ocp_resources_path }}/oc adm release mirror -a {{ ocp_resources_path }}/pull-secret.json --to-dir={{ ocp_resources_path }}/mirror quay.io/{{ product_repo }}/{{ release_name }}:{{ ocp_release }}-x86_64"
+  ignore_errors: no
+

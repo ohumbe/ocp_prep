@@ -1,0 +1,24 @@
+---
+- name: Download checksums for installation program
+  get_url:
+    url: "{{ repo_url }}/clients/ocp/{{ ocp_release }}/sha256sum.txt"
+    dest: "{{ ocp_resources_path }}"
+
+- name: Capture checksums for client program
+  shell: "cat /{{ ocp_resources_path }}/sha256sum.txt | grep openshift-client-linux | awk '{ print $1 }'"
+  register: client_sha
+
+- name: Download client program
+  get_url:
+    url: "{{ repo_url }}/clients/ocp/{{ ocp_release }}/openshift-client-linux-{{ ocp_release }}.tar.gz"
+    dest: "{{ ocp_resources_path }}"
+    checksum: sha256:{{ client_sha.stdout }}
+
+## Untar tools
+- name: Untar
+  unarchive:
+    src: "{{ ocp_resources_path }}/{{ item }}"
+    dest: "{{ ocp_resources_path }}"
+    remote_src: yes
+  loop:
+    - "openshift-client-linux-{{ ocp_release }}.tar.gz"

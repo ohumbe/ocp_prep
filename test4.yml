@@ -1,8 +1,0 @@
----
-- hosts: 192.168.122.81
-  vars_files:
-    - vars/main.yml
-    - vars/vault.yml
-  roles:
-    - ocp_prep
-      #   - { role: ignition_webserver, become: true }

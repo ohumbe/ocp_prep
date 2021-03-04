@@ -1,0 +1,26 @@
+---
+- name: Generate pullsecret json
+  include_tasks: pullsecret.yml
+
+- name: Connected mirroring
+  command: "{{ ocp_resources_path }}/oc adm -a {{ ocp_resources_path }}/pull-secret.json release mirror \
+           --from=quay.io/{{ product_repo }}/{{ release_name }}:{{ ocp_release }}-x86_64 \
+           --to={{ local_registry }}/{{ local_repository }} \
+           --to-release-image={{ local_registry }}/{{ local_repository }}:{{ ocp_release }}-x86_64"
+  when: internet_connected == "yes"
+
+- name: Disconnected mirroring
+  command: "{{ ocp_resources_path}}/oc adm -a {{ ocp_resources_path }}/pull-secret.json release mirror \
+           --from=quay.io/{{ product_repo }}/{{ release_name }}:{{ ocp_release }}-x86_64 \
+           --to={{ local_registry }}/{{ local_repository }} \
+           --to-release-image={{ local_registry }}/{{ local_repository }}:{{ ocp_release }}-x86_64 --dry-run"
+  when: internet_connected == "no"
+  ignore_errors: no
+
+- name: Mirror to removable media
+  command: "{{ ocp_resources_path }}/oc adm release mirror -a {{ ocp_resources_path }}/pull-secret.json \
+           --to-dir={{ ocp_resources_path }}/mirror \
+           quay.io/{{ product_repo }}/{{ release_name }}:{{ ocp_release }}-x86_64"
+  when: internet_connected == "no"
+  ignore_errors: no
+

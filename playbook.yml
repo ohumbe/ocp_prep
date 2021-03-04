@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - vars/main.yml
+    - vars/vault.yml
+  roles:
+    - images_update_pull
+    #    - mirror_images_push
+    #    - ocp_prep

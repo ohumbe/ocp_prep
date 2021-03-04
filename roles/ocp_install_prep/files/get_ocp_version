@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Registery ocp minor version
+
+OCP_RELEASE=$1
+OCP_VERSION=$(echo ${OCP_RELEASE} | awk -F "." '{ print $1"."$2 }')
+
+printf "${OCP_VERSION}"
