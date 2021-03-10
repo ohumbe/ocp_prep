@@ -10,7 +10,7 @@ release_name: ocp-release
 repo_url: https://mirror.openshift.com/pub/openshift-v4
 
 ## Sensitive Info (consider storing in separate vault file)
-mirror_registry_user: ''
-mirror_registry_passwd: ''
-pullsecret: ''
-pullsecret_email: ''
+#mirror_registry_user: ''
+#mirror_registry_passwd: ''
+#pullsecret: ''
+#pullsecret_email: ''

@@ -35,14 +35,14 @@
     force: true
 
 - name: Capture checksums for OVA
-  shell: "cat {{ ocp_resources_path }}/sha256sum.txt | grep rhcos-{{ ova_version.stdout }}-{{ ocp_resources_path }}-vmware.{{ ocp_resources_path }}.ova | awk '{ print $1 }'"
+  shell: "cat {{ ocp_resources_path }}/sha256sum.txt | grep rhcos-{{ ova_version.stdout }}-x86_64-vmware.x86_64.ova | awk '{ print $1 }'"
   register: ova_sha
 
-  #- name: Download ova
-  #  get_url:
-    #    url: "{{ repo_url }}/dependencies/rhcos/{{ ocp_version.stdout }}/{{ ova_version.stdout }}/rhcos-{{ ova_version.stdout }}-{{ ocp_resources_path }}-vmware.{{ ocp_resources_path }}.ova"
-    #    dest: "{{ ocp_resources_path }}"
-    #    checksum: sha256:{{ ova_sha.stdout }}
+- name: Download ova
+  get_url:
+    url: "{{ repo_url }}/dependencies/rhcos/{{ ocp_version.stdout }}/{{ ova_version.stdout }}/rhcos-{{ ova_version.stdout }}-x86_64-vmware.x86_64.ova"
+    dest: "{{ ocp_resources_path }}"
+    checksum: sha256:{{ ova_sha.stdout }}
 
 ## Untar tools
 - name: Untar
